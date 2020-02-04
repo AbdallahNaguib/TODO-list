@@ -64,6 +64,8 @@ public class AddTaskActivity extends AppCompatActivity
                 task.observe(this, new Observer<TaskEntry>() {
                     @Override
                     public void onChanged(@Nullable TaskEntry taskEntry) {
+                        if(taskEntry==null)return;
+                        task.removeObserver(this);
                         populateUI(taskEntry);
                     }
                 });
@@ -103,7 +105,6 @@ public class AddTaskActivity extends AppCompatActivity
         }else{
             updateTask();
         }
-        finish();
     }
 
     private void updateTask(){
@@ -120,6 +121,7 @@ public class AddTaskActivity extends AppCompatActivity
                 AppDatabase.getInstance(context).taskDao().updateTask(task);
             }
         });
+        finish();
     }
     private String getDes(){
         String des = mEditText.getText().toString().trim();
@@ -146,6 +148,7 @@ public class AddTaskActivity extends AppCompatActivity
                 finish();
             }
         });
+        finish();
     }
 
 
