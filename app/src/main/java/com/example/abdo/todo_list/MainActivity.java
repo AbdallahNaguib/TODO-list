@@ -16,8 +16,8 @@
 
 package com.example.abdo.todo_list;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         mAdapter = new TaskAdapter(this, this);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
-        updateList();
         mRecyclerView.setAdapter(mAdapter);
 
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
@@ -114,27 +113,15 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 startActivity(addTaskIntent);
             }
         });
+        setupViewModel();
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater=getMenuInflater();
-        inflater.inflate(R.menu.main,menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id=item.getItemId();
-        if(id==R.id.menu_refresh){
-            updateList();
-        }
-        return true;
-    }
-
-    void updateList(){
-        final LiveData<List<TaskEntry>> taskEntries = mDb.taskDao().loadAllTasks();
-        taskEntries.observe(this, new Observer<List<TaskEntry>>() {
+    void setupViewModel(){
+        MainViewModel viewModel= ViewModelProviders.of(this)
+                .get(MainViewModel.class);
+        viewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(@Nullable List<TaskEntry> taskEntries) {
                 mAdapter.setTasks(taskEntries);
